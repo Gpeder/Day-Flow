@@ -1,5 +1,5 @@
 import 'package:dayflow/theme/theme.dart';
-import 'package:dayflow/view/home.dart';
+import 'package:dayflow/view/root/root_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -42,11 +42,10 @@ class DayApp extends StatelessWidget {
         ),
         primaryColor: AppColors.primary,
         scaffoldBackgroundColor: AppColors.background,
-        useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
       title: 'Day Flow',
-      home: HomePage(),
+      home: RootPage(),
     );
   }
 }

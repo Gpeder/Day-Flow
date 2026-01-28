@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dayflow/theme/theme.dart';
 import 'package:dayflow/widgets/main_checkbox.dart';
 import 'package:dayflow/widgets/main_chip.dart';
@@ -49,11 +50,38 @@ class _ListaTarefasState extends State<ListaTarefas> {
       'hora': '7:00 PM',
       'selected': false,
     },
+    {
+      'title': 'Reunião com equipe',
+      'categoria': 'Trabalho',
+      'prioridade': 'Alta',
+      'hora': '10:00 AM',
+      'selected': false,
+    },
+    {
+      'title': 'Consulta médica',
+      'prioridade': 'Média',
+      'categoria': 'Saúde',
+      'hora': '2:00 PM',
+      'selected': true,
+    },
+    {
+      'title': 'Comprar mantimentos',
+      'prioridade': 'Baixa',
+      'categoria': 'Pessoal',
+      'hora': '5:00 PM',
+      'selected': false,
+    },
+    {
+      'title': 'Estudar Flutter',
+      'prioridade': 'Alta',
+      'categoria': 'Estudos',
+      'hora': '7:00 PM',
+      'selected': false,
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
-
     return Expanded(
       child: Column(
         children: [
@@ -74,31 +102,32 @@ class _ListaTarefasState extends State<ListaTarefas> {
           ),
           SizedBox(height: 20),
           Expanded(
-            child: ListView.separated(
-              physics: BouncingScrollPhysics(),
-              separatorBuilder: (context, index) => SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                final tarefa = tarefas[index];
-                return ItemListaTarefas(
-                  prioridade: tarefa['prioridade'],
-                  title: tarefa['title'],
-                  categoria: tarefa['categoria'],
-                  hora: tarefa['hora'],
-                  selected: tarefa['selected'] as bool,
-                  onChanged: (value) {
-                    setState(() {
-                      tarefa['selected'] = value ?? false;
-                    });
-                  },
-                  onTap: (){
-                    setState(() {
-                      tarefa['selected'] = !tarefa['selected'];
-                    });
-                  },
-                  onLongPress: () {},
-                );
-              },
-              itemCount: tarefas.length,
+            child: ClipRRect(
+              child: ListView.separated(
+                separatorBuilder: (context, index) => SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final tarefa = tarefas[index];
+                  return ItemListaTarefas(
+                    prioridade: tarefa['prioridade'],
+                    title: tarefa['title'],
+                    categoria: tarefa['categoria'],
+                    hora: tarefa['hora'],
+                    selected: tarefa['selected'] as bool,
+                    onChanged: (value) {
+                      setState(() {
+                        tarefa['selected'] = value ?? false;
+                      });
+                    },
+                    onTap: () {
+                      setState(() {
+                        tarefa['selected'] = !tarefa['selected'];
+                      });
+                    },
+                    onLongPress: () {},
+                  );
+                },
+                itemCount: tarefas.length,
+              ),
             ),
           ),
         ],
@@ -132,6 +161,8 @@ class ItemListaTarefas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color getPrioridadeCor(String prioridade) {
+      if (selected) return AppColors.textSecondary;
+
       switch (prioridade) {
         case 'Alta':
           return AppColors.error;
@@ -140,7 +171,7 @@ class ItemListaTarefas extends StatelessWidget {
         case 'Baixa':
           return AppColors.success;
         default:
-          return Colors.grey;
+          return AppColors.textSecondary;
       }
     }
 
@@ -154,11 +185,22 @@ class ItemListaTarefas extends StatelessWidget {
       ),
       title: Padding(
         padding: const EdgeInsets.only(bottom: 5),
-        child: Text(title, style: AppTextStyles.text18Bold),
+        child: AutoSizeText(
+          title,
+          style: AppTextStyles.text18Bold.copyWith(
+            color: selected ? AppColors.textSecondary : null,
+            decoration: selected ? TextDecoration.lineThrough : null,
+          ),
+          maxLines: 1,
+          maxFontSize: 20,
+          minFontSize: 16,
+        ),
       ),
       subtitle: Text(
         '$categoria -  $hora',
-        style: AppTextStyles.text14.copyWith(color: AppColors.textMuted),
+        style: AppTextStyles.text14.copyWith(
+          color: selected ? AppColors.textSecondary : AppColors.textMuted,
+        ),
       ),
       trailing: AppCheckbox(value: selected, onChanged: onChanged),
       onTap: onTap,
