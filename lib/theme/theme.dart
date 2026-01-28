@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const Color background = Color(0xFF0E1116);
+  static const Color background = Color(0xFFF8F9FA);
   static const Color surface = Color(0xFF151A21);
-  static const Color card = Color(0xFF1A2029);
+  static const Color card = Color(0xFFFFFFFF);
 
   static const Color primary = Color(0xFF4DA3FF);
   static const Color primarySoft = Color(0xFF1E3A5F);
 
   static const Color accent = Color(0xFF7C7CFF);
-  static const Color mutedAccent = Color(0xFF232A36);
+  static const Color mutedAccent = Color(0xFFE5E7EB );
 
-  static const Color textPrimary = Color(0xFFE8EBF0);
+  static const Color textPrimary = Color(0xFF111827);
   static const Color textSecondary = Color(0xFF9AA4B2);
   static const Color textMuted = Color(0xFF6B7280);
 
-  static const Color border = Color(0xFF242B36);
+  static const Color border = Color(0xFFE5E7EB);
   static const Color divider = Color(0xFF1F2530);
 
   static const Color success = Color(0xFF2ED573);

@@ -1,3 +1,4 @@
+import 'package:dayflow/theme/theme.dart';
 import 'package:dayflow/view/home.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,38 @@ class DayApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        listTileTheme: ListTileThemeData(
+          tileColor: AppColors.card,
+          textColor: AppColors.textPrimary,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: AppColors.border, width: 1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          horizontalTitleGap: 0,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+        ),
+        chipTheme: ChipThemeData(
+          backgroundColor: AppColors.mutedAccent,
+          selectedColor: AppColors.primary,
+          labelStyle: AppTextStyles.text14.copyWith(
+            color: AppColors.textPrimary,
+          ),
+          secondaryLabelStyle: AppTextStyles.text14.copyWith(
+            color: AppColors.textPrimary,
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        primaryColor: AppColors.primary,
+        scaffoldBackgroundColor: AppColors.background,
+        useMaterial3: true,
+      ),
       debugShowCheckedModeBanner: false,
       title: 'Day Flow',
       home: HomePage(),
