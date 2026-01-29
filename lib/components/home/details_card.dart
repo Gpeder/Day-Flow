@@ -22,6 +22,44 @@ class DetailsCard extends StatelessWidget {
           return AppColors.textSecondary;
       }
     }
+
+    String formatDataPT(DateTime data) {
+      const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+      const meses = [
+        'janeiro',
+        'fevereiro',
+        'março',
+        'abril',
+        'maio',
+        'junho',
+        'julho',
+        'agosto',
+        'setembro',
+        'outubro',
+        'novembro',
+        'dezembro',
+      ];
+
+      final dia = data.day;
+      final diaSet = diasSemana[data.weekday - 1];
+      final mes = meses[data.month - 1];
+
+      return '$diaSet, $dia de $mes';
+    }
+
+    DateTime parseData(String? dataString) {
+      if (dataString == null || dataString.isEmpty) {
+        return DateTime.now();
+      }
+      try {
+        return DateTime.parse(dataString);
+      } catch (e) {
+        return DateTime.now();
+      }
+    }
+
+    final dataFormatada = formatDataPT(parseData(item['data']));
     double larguraDaTela = MediaQuery.of(context).size.width;
     double larguraDoCard = (larguraDaTela / 2) - 24;
 
@@ -72,7 +110,7 @@ class DetailsCard extends StatelessWidget {
                       ),
                     ),
                     subtitle: Text(
-                      item['data'],
+                      dataFormatada,
                       style: AppTextStyles.title20Bold,
                     ),
                   ),
@@ -125,7 +163,7 @@ class DetailsCard extends StatelessWidget {
             ),
 
             SizedBox(height: 20),
-            
+
             //categoria e prioridade
             Wrap(
               spacing: 10,
@@ -214,6 +252,7 @@ class DetailsCard extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(height: 20),
           ],
         ),
       ),

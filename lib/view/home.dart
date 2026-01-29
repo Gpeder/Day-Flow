@@ -10,7 +10,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: MainHomeAppbar(),
       body: Padding(
-        padding: .symmetric(horizontal: 16, vertical: 20),
+        padding: EdgeInsets.symmetric(horizontal: 16).copyWith(top: 20),
         child: ListaTarefas(),
       ),
     );

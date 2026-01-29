@@ -4,6 +4,7 @@ import 'package:dayflow/theme/theme.dart';
 import 'package:dayflow/widgets/main_checkbox.dart';
 import 'package:dayflow/widgets/main_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 class ListaTarefas extends StatefulWidget {
   const ListaTarefas({super.key});
@@ -78,6 +79,10 @@ class _ListaTarefasState extends State<ListaTarefas> {
     },
   ];
 
+  late final List<Map<String, dynamic>> _tarefasOriginais = List.from(tarefas);
+
+  int _categoriaSelecionadaIndex = 0;
+
   String _formatDataPT(DateTime data) {
     const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
@@ -103,6 +108,20 @@ class _ListaTarefasState extends State<ListaTarefas> {
     return '$diaSet, $dia de $mes';
   }
 
+  void _onCategoriaSelected(String categoria, int index) {
+    setState(() {
+      _categoriaSelecionadaIndex = index;
+
+      if (categoria == 'Todas') {
+        tarefas = List.from(_tarefasOriginais);
+      } else {
+        tarefas = _tarefasOriginais
+            .where((tarefa) => tarefa['categoria'] == categoria)
+            .toList();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final dataFormatada = _formatDataPT(DateTime.now());
@@ -113,7 +132,9 @@ class _ListaTarefasState extends State<ListaTarefas> {
         Text(dataFormatada, style: AppTextStyles.title24Bold),
         SizedBox(height: 4),
         Text(
-          '(${tarefas.length}) tarefas hoje',
+          tarefas.isEmpty
+              ? 'Nenhuma tarefa encontrada'
+              : '${tarefas.length} tarefa${tarefas.length > 1 ? 's' : ''} hoje',
           style: AppTextStyles.text16.copyWith(color: AppColors.disabled),
         ),
         SizedBox(height: 20),
@@ -127,8 +148,10 @@ class _ListaTarefasState extends State<ListaTarefas> {
             itemBuilder: (context, index) {
               return MainChip(
                 label: ListaTarefas.categorias[index],
-                selected: index == 0,
-                onTap: () {},
+                selected: _categoriaSelecionadaIndex == index,
+                onTap: () {
+                  _onCategoriaSelected(ListaTarefas.categorias[index], index);
+                },
               );
             },
           ),
@@ -136,38 +159,42 @@ class _ListaTarefasState extends State<ListaTarefas> {
         SizedBox(height: 20),
 
         Expanded(
-          child: ListView.separated(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.zero,
-            separatorBuilder: (context, index) => SizedBox(height: 10),
-            itemBuilder: (context, index) {
-              final tarefa = tarefas[index];
-              return ItemListaTarefas(
-                prioridade: tarefa['prioridade'],
-                title: tarefa['title'],
-                categoria: tarefa['categoria'],
-                hora: tarefa['hora'] ?? '',
-                selected: tarefa['selected'] as bool,
-                onChanged: (value) {
-                  setState(() {
-                    tarefa['selected'] = value ?? false;
-                  });
-                },
-                onTap: () {
-                  setState(() {
-                    tarefa['selected'] = !tarefa['selected'];
-                  });
-                },
-                onLongPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DetailsCard(item: tarefa)),
-                  );
-                },
-              );
-            },
-            itemCount: tarefas.length,
-          ),
+          child: tarefas.isEmpty
+              ? _resultado()
+              : ListView.separated(
+                  physics: BouncingScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  separatorBuilder: (context, index) => SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final tarefa = tarefas[index];
+                    return ItemListaTarefas(
+                      prioridade: tarefa['prioridade'],
+                      title: tarefa['title'],
+                      categoria: tarefa['categoria'],
+                      hora: tarefa['hora'] ?? '',
+                      selected: tarefa['selected'] as bool,
+                      onChanged: (value) {
+                        setState(() {
+                          tarefa['selected'] = value ?? false;
+                        });
+                      },
+                      onTap: () {
+                        setState(() {
+                          tarefa['selected'] = !tarefa['selected'];
+                        });
+                      },
+                      onLongPress: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailsCard(item: tarefa),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  itemCount: tarefas.length,
+                ),
         ),
       ],
     );
@@ -248,4 +275,31 @@ class ItemListaTarefas extends StatelessWidget {
       ),
     );
   }
+}
+
+Center _resultado() {
+  return Center(
+    child: Column(
+      children: [
+        SizedBox(height: 80),
+        CircleAvatar(
+          radius: 30,
+          backgroundColor: AppColors.border,
+          child: Icon(
+            Ionicons.checkmark_circle_outline,
+            color: AppColors.textMuted,
+            size: 36,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text('Tudo certo!', style: AppTextStyles.title24Bold),
+        SizedBox(height: 5),
+        Text(
+          'Nenhuma tarefa encontrada',
+          style: AppTextStyles.text18.copyWith(color: AppColors.textMuted),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
 }
