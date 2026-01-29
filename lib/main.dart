@@ -13,6 +13,13 @@ class DayApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        useMaterial3: true,
+        appBarTheme: AppBarTheme(
+          backgroundColor: AppColors.background,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          
+        ),
         listTileTheme: ListTileThemeData(
           tileColor: AppColors.card,
           textColor: AppColors.textPrimary,

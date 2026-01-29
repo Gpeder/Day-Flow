@@ -80,58 +80,96 @@ class _ListaTarefasState extends State<ListaTarefas> {
     },
   ];
 
+  String _formatDataPT(DateTime data) {
+    const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+    const meses = [
+      'janeiro',
+      'fevereiro',
+      'março',
+      'abril',
+      'maio',
+      'junho',
+      'julho',
+      'agosto',
+      'setembro',
+      'outubro',
+      'novembro',
+      'dezembro',
+    ];
+
+    final dia = data.day;
+    final diaSet = diasSemana[data.weekday - 1];
+    final mes = meses[data.month - 1];
+
+    return '$diaSet, $dia de $mes';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 40,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: ListaTarefas.categorias.length,
-              separatorBuilder: (context, index) => SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                return MainChip(
-                  label: ListaTarefas.categorias[index],
-                  selected: index == 0,
-                  onTap: () {},
-                );
-              },
-            ),
+    final dataFormatada = _formatDataPT(DateTime.now());
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // CABEÇALHO - SEM Container vermelho!
+        Text(dataFormatada, style: AppTextStyles.title24Bold),
+        SizedBox(height: 4),
+        Text(
+          '(${tarefas.length}) tarefas hoje',
+          style: AppTextStyles.text16.copyWith(color: AppColors.disabled),
+        ),
+        SizedBox(height: 20),
+
+        // FILTROS
+        SizedBox(
+          height: 40,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: ListaTarefas.categorias.length,
+            separatorBuilder: (context, index) => SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              return MainChip(
+                label: ListaTarefas.categorias[index],
+                selected: index == 0,
+                onTap: () {},
+              );
+            },
           ),
-          SizedBox(height: 20),
-          Expanded(
-            child: ClipRRect(
-              child: ListView.separated(
-                separatorBuilder: (context, index) => SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final tarefa = tarefas[index];
-                  return ItemListaTarefas(
-                    prioridade: tarefa['prioridade'],
-                    title: tarefa['title'],
-                    categoria: tarefa['categoria'],
-                    hora: tarefa['hora'],
-                    selected: tarefa['selected'] as bool,
-                    onChanged: (value) {
-                      setState(() {
-                        tarefa['selected'] = value ?? false;
-                      });
-                    },
-                    onTap: () {
-                      setState(() {
-                        tarefa['selected'] = !tarefa['selected'];
-                      });
-                    },
-                    onLongPress: () {},
-                  );
+        ),
+        SizedBox(height: 20),
+
+        // LISTA - Remove o Container azul/verde de debug!
+        Expanded(
+          child: ListView.separated(
+            physics: BouncingScrollPhysics(),
+            padding: EdgeInsets.zero,
+            separatorBuilder: (context, index) => SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final tarefa = tarefas[index];
+              return ItemListaTarefas(
+                prioridade: tarefa['prioridade'],
+                title: tarefa['title'],
+                categoria: tarefa['categoria'],
+                hora: tarefa['hora'],
+                selected: tarefa['selected'] as bool,
+                onChanged: (value) {
+                  setState(() {
+                    tarefa['selected'] = value ?? false;
+                  });
                 },
-                itemCount: tarefas.length,
-              ),
-            ),
+                onTap: () {
+                  setState(() {
+                    tarefa['selected'] = !tarefa['selected'];
+                  });
+                },
+                onLongPress: () {},
+              );
+            },
+            itemCount: tarefas.length,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -175,36 +213,39 @@ class ItemListaTarefas extends StatelessWidget {
       }
     }
 
-    return ListTile(
-      leading: Container(
-        width: 5,
-        decoration: BoxDecoration(
-          color: getPrioridadeCor(prioridade),
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      title: Padding(
-        padding: const EdgeInsets.only(bottom: 5),
-        child: AutoSizeText(
-          title,
-          style: AppTextStyles.text18Bold.copyWith(
-            color: selected ? AppColors.textSecondary : null,
-            decoration: selected ? TextDecoration.lineThrough : null,
+    return Material(
+      color: AppColors.card,
+      child: ListTile(
+        leading: Container(
+          width: 5,
+          decoration: BoxDecoration(
+            color: getPrioridadeCor(prioridade),
+            borderRadius: BorderRadius.circular(12),
           ),
-          maxLines: 1,
-          maxFontSize: 20,
-          minFontSize: 16,
         ),
-      ),
-      subtitle: Text(
-        '$categoria -  $hora',
-        style: AppTextStyles.text14.copyWith(
-          color: selected ? AppColors.textSecondary : AppColors.textMuted,
+        title: Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: AutoSizeText(
+            title,
+            style: AppTextStyles.text18Bold.copyWith(
+              color: selected ? AppColors.textSecondary : null,
+              decoration: selected ? TextDecoration.lineThrough : null,
+            ),
+            maxLines: 1,
+            maxFontSize: 20,
+            minFontSize: 16,
+          ),
         ),
+        subtitle: Text(
+          '$categoria -  $hora',
+          style: AppTextStyles.text14.copyWith(
+            color: selected ? AppColors.textSecondary : AppColors.textMuted,
+          ),
+        ),
+        trailing: AppCheckbox(value: selected, onChanged: onChanged),
+        onTap: onTap,
+        onLongPress: onLongPress,
       ),
-      trailing: AppCheckbox(value: selected, onChanged: onChanged),
-      onTap: onTap,
-      onLongPress: onLongPress,
     );
   }
 }
