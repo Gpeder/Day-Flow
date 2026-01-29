@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:dayflow/components/home/details_card.dart';
 import 'package:dayflow/theme/theme.dart';
 import 'package:dayflow/widgets/main_checkbox.dart';
 import 'package:dayflow/widgets/main_chip.dart';
@@ -26,56 +27,53 @@ class _ListaTarefasState extends State<ListaTarefas> {
       'title': 'Reunião com equipe',
       'categoria': 'Trabalho',
       'prioridade': 'Alta',
-      'hora': '10:00 AM',
+      'data': '2024-06-10',
+      'notas': 'Discutir o progresso do projeto e próximos passos.',
+      'hora': '10:00',
       'selected': false,
     },
     {
       'title': 'Consulta médica',
       'prioridade': 'Média',
       'categoria': 'Saúde',
-      'hora': '2:00 PM',
-      'selected': true,
+      'data': '2024-06-10',
+      'notas': 'Consulta de rotina com o médico. Levar exames recentes.',
+      'selected': false,
     },
     {
       'title': 'Comprar mantimentos',
       'prioridade': 'Baixa',
       'categoria': 'Pessoal',
-      'hora': '5:00 PM',
+      'data': '2024-06-10',
+      'hora': '5:00',
+      'notas': 'Comprar frutas, vegetais e produtos de limpeza.',
       'selected': false,
     },
     {
       'title': 'Estudar Flutter',
       'prioridade': 'Alta',
       'categoria': 'Estudos',
-      'hora': '7:00 PM',
+      'data': '2024-06-10',
+      'hora': '7:00',
+      'notas': 'Praticar exercícios e revisar conceitos importantes.',
       'selected': false,
     },
     {
       'title': 'Reunião com equipe',
       'categoria': 'Trabalho',
       'prioridade': 'Alta',
-      'hora': '10:00 AM',
+      'data': '2024-06-10',
+      'hora': '10:00',
+      'notas': 'Discutir o progresso do projeto e próximos passos.',
       'selected': false,
     },
     {
       'title': 'Consulta médica',
       'prioridade': 'Média',
       'categoria': 'Saúde',
-      'hora': '2:00 PM',
-      'selected': true,
-    },
-    {
-      'title': 'Comprar mantimentos',
-      'prioridade': 'Baixa',
-      'categoria': 'Pessoal',
-      'hora': '5:00 PM',
-      'selected': false,
-    },
-    {
-      'title': 'Estudar Flutter',
-      'prioridade': 'Alta',
-      'categoria': 'Estudos',
-      'hora': '7:00 PM',
+      'data': '2024-06-10',
+      'hora': '2:00',
+      'notas': 'Consulta de rotina com o médico. Levar exames recentes.',
       'selected': false,
     },
   ];
@@ -112,7 +110,6 @@ class _ListaTarefasState extends State<ListaTarefas> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // CABEÇALHO - SEM Container vermelho!
         Text(dataFormatada, style: AppTextStyles.title24Bold),
         SizedBox(height: 4),
         Text(
@@ -121,7 +118,6 @@ class _ListaTarefasState extends State<ListaTarefas> {
         ),
         SizedBox(height: 20),
 
-        // FILTROS
         SizedBox(
           height: 40,
           child: ListView.separated(
@@ -139,7 +135,6 @@ class _ListaTarefasState extends State<ListaTarefas> {
         ),
         SizedBox(height: 20),
 
-        // LISTA - Remove o Container azul/verde de debug!
         Expanded(
           child: ListView.separated(
             physics: BouncingScrollPhysics(),
@@ -151,7 +146,7 @@ class _ListaTarefasState extends State<ListaTarefas> {
                 prioridade: tarefa['prioridade'],
                 title: tarefa['title'],
                 categoria: tarefa['categoria'],
-                hora: tarefa['hora'],
+                hora: tarefa['hora'] ?? '',
                 selected: tarefa['selected'] as bool,
                 onChanged: (value) {
                   setState(() {
@@ -163,7 +158,12 @@ class _ListaTarefasState extends State<ListaTarefas> {
                     tarefa['selected'] = !tarefa['selected'];
                   });
                 },
-                onLongPress: () {},
+                onLongPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DetailsCard(item: tarefa)),
+                  );
+                },
               );
             },
             itemCount: tarefas.length,
@@ -237,7 +237,7 @@ class ItemListaTarefas extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          '$categoria -  $hora',
+          '$categoria${hora.isNotEmpty ? ' - $hora' : ''}',
           style: AppTextStyles.text14.copyWith(
             color: selected ? AppColors.textSecondary : AppColors.textMuted,
           ),

@@ -18,8 +18,8 @@ class DayApp extends StatelessWidget {
           backgroundColor: AppColors.background,
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
-          
         ),
+        iconTheme: const IconThemeData(color: Colors.black),
         listTileTheme: ListTileThemeData(
           tileColor: AppColors.card,
           textColor: AppColors.textPrimary,
