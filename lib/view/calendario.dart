@@ -111,9 +111,11 @@ class _CalendarioState extends State<Calendario> {
               daysOfWeekStyle: DaysOfWeekStyle(
                 weekdayStyle: AppTextStyles.text14.copyWith(
                   color: AppColors.textMuted,
+                  fontWeight: FontWeight.w600,
                 ),
                 weekendStyle: AppTextStyles.text14.copyWith(
-                  color: AppColors.textMuted,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.error,
                 ),
               ),
 
@@ -122,18 +124,18 @@ class _CalendarioState extends State<Calendario> {
                 defaultTextStyle: AppTextStyles.text16,
                 weekendTextStyle: AppTextStyles.text16,
                 todayTextStyle: AppTextStyles.text16Bold.copyWith(
-                  color: AppColors.primary,
+                  color: AppColors.card,
                 ),
                 selectedTextStyle: AppTextStyles.text16Bold.copyWith(
-                  color: Colors.white,
+                  color: AppColors.background,
                 ),
 
                 todayDecoration: BoxDecoration(
-                  color: Colors.transparent,
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: AppColors.accent,
                   shape: BoxShape.circle,
                 ),
 
@@ -142,9 +144,16 @@ class _CalendarioState extends State<Calendario> {
                   shape: BoxShape.circle,
                 ),
                 markersAlignment: Alignment.bottomCenter,
-                markerSize: 5,
+                markerSize: 4,
               ),
             ),
+            SizedBox(height: 20),
+
+            Text(
+              _formatDataPT(DateTime(mesAtual.year, mesAtual.month, 1)),
+              style: AppTextStyles.title20Bold.copyWith(color: AppColors.textPrimary),
+            ),
+            SizedBox(height: 10),
           ],
         ),
       ),
