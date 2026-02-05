@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:dayflow/helpers/date_helpers.dart';
 import 'package:dayflow/theme/theme.dart';
 import 'package:dayflow/widgets/main_card.dart';
 import 'package:flutter/material.dart';
@@ -23,43 +24,8 @@ class DetailsCard extends StatelessWidget {
       }
     }
 
-    String formatDataPT(DateTime data) {
-      const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-
-      const meses = [
-        'janeiro',
-        'fevereiro',
-        'março',
-        'abril',
-        'maio',
-        'junho',
-        'julho',
-        'agosto',
-        'setembro',
-        'outubro',
-        'novembro',
-        'dezembro',
-      ];
-
-      final dia = data.day;
-      final diaSet = diasSemana[data.weekday - 1];
-      final mes = meses[data.month - 1];
-
-      return '$diaSet, $dia de $mes';
-    }
-
-    DateTime parseData(String? dataString) {
-      if (dataString == null || dataString.isEmpty) {
-        return DateTime.now();
-      }
-      try {
-        return DateTime.parse(dataString);
-      } catch (e) {
-        return DateTime.now();
-      }
-    }
-
-    final dataFormatada = formatDataPT(parseData(item['data']));
+    final dataFormatada =
+        DateHelpers.formatDataPT(DateHelpers.parseData(item['data']));
     double larguraDaTela = MediaQuery.of(context).size.width;
     double larguraDoCard = (larguraDaTela / 2) - 24;
 

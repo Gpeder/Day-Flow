@@ -1,3 +1,4 @@
+import 'package:dayflow/theme/buttons.dart';
 import 'package:dayflow/theme/theme.dart';
 import 'package:dayflow/view/root/root_page.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +15,7 @@ class DayApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       locale: const Locale('pt', 'BR'),
-      supportedLocales: const [
-        Locale('pt', 'BR'),
-        Locale('en', 'US'),
-      ],
+      supportedLocales: const [Locale('pt', 'BR'), Locale('en', 'US')],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -25,6 +23,16 @@ class DayApp extends StatelessWidget {
       ],
       theme: ThemeData(
         useMaterial3: true,
+
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: AppButtonStyles.primary,
+        ),
+
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: AppButtonStyles.outline,
+        ),
+
+        textButtonTheme: TextButtonThemeData(style: AppButtonStyles.ghost),
         appBarTheme: AppBarTheme(
           backgroundColor: AppColors.background,
           surfaceTintColor: Colors.transparent,

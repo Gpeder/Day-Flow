@@ -1,3 +1,5 @@
+import 'package:dayflow/components/home/listatarefas.dart';
+import 'package:dayflow/model/tarefa_model.dart';
 import 'package:dayflow/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
@@ -13,6 +15,11 @@ class Calendario extends StatefulWidget {
 class _CalendarioState extends State<Calendario> {
   DateTime mesAtual = DateTime.now();
   DateTime? dataSelecionada;
+
+  DateTime get dataSelecionadaEfetiva => dataSelecionada ?? DateTime.now();
+
+  List<TarefaModel> get tarefasDoDia =>
+      TarefaModel.getTarefasPorData(dataSelecionadaEfetiva);
 
   String _formatDataPT(DateTime data) {
     const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
@@ -37,6 +44,29 @@ class _CalendarioState extends State<Calendario> {
     final mes = meses[data.month - 1];
 
     return '$diaSet, $dia de $mes';
+  }
+
+  String _formatDataPT2(DateTime data) {
+    const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+    const meses = [
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
+    ];
+
+    final mes = meses[data.month - 1];
+
+    return '$mes ${data.year}';
   }
 
   void _proximoMes() {
@@ -81,7 +111,7 @@ class _CalendarioState extends State<Calendario> {
           children: [
             //? mês e ano
             Text(
-              _formatDataPT(DateTime(mesAtual.year, mesAtual.month, 1)),
+              _formatDataPT2(DateTime(mesAtual.year, mesAtual.month, 1)),
               style: AppTextStyles.title20.copyWith(color: AppColors.textMuted),
             ),
 
@@ -147,13 +177,41 @@ class _CalendarioState extends State<Calendario> {
                 markerSize: 4,
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 25),
 
             Text(
-              _formatDataPT(DateTime(mesAtual.year, mesAtual.month, 1)),
-              style: AppTextStyles.title20Bold.copyWith(color: AppColors.textPrimary),
+              _formatDataPT(dataSelecionadaEfetiva),
+              style: AppTextStyles.title20Bold.copyWith(
+                color: AppColors.textPrimary,
+              ),
             ),
             SizedBox(height: 10),
+
+            if (tarefasDoDia.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                child: Center(
+                  child: Text(
+                    'Nenhuma tarefa para este dia',
+                    style: AppTextStyles.text16.copyWith(
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ),
+              )
+            else
+              ...tarefasDoDia.map(
+                (tarefa) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: ItemListaTarefas(
+                    title: tarefa.title,
+                    categoria: tarefa.categoria,
+                    hora: tarefa.hora ?? '',
+                    selected: tarefa.selected,
+                    prioridade: tarefa.prioridade,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
