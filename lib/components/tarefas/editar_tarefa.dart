@@ -16,12 +16,16 @@ class EditarTarefa extends StatefulWidget {
 class _EditarTarefaState extends State<EditarTarefa> {
   late String _categoria;
   late String _prioridade;
+  late DateTime _dataSelecionada;
+  late String _horaSelecionada;
 
   @override
   void initState() {
     super.initState();
     _categoria = widget.tarefa.categoria;
     _prioridade = widget.tarefa.prioridade;
+    _dataSelecionada = widget.tarefa.data;
+    _horaSelecionada = widget.tarefa.hora ?? '';
   }
 
   Color getPrioridadeCor(String prioridade) {
@@ -138,6 +142,102 @@ class _EditarTarefaState extends State<EditarTarefa> {
     );
   }
 
+  void _showDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: _dataSelecionada,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(primary: AppColors.primary),
+          ),
+          child: child!,
+        );
+      },
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          _dataSelecionada = value;
+        });
+      }
+    });
+  }
+
+  void _showTimePicker() {
+    showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(primary: AppColors.primary),
+          ),
+          child: child!,
+        );
+      },
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          _horaSelecionada = '${value.hour}:${value.minute}';
+        });
+      }
+    });
+  }
+
+  Future<void> _showEditNote(BuildContext context, String valorAtual) async {
+    final controller = TextEditingController(text: valorAtual);
+
+    await showDialog<String>(
+      context: context,
+      builder: (context) {
+        final theme = Theme.of(context);
+
+        return AlertDialog(
+          backgroundColor: AppColors.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text('Editar nota', style: AppTextStyles.text18Bold),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            minLines: 3,
+            maxLines: 5,
+            decoration: InputDecoration(
+              hintText: 'Digite o novo valor',
+              filled: true,
+              fillColor: theme.colorScheme.surface,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: theme.dividerColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppColors.primary, width: 1.6),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, controller.text),
+              child: const Text('Salvar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double larguraDaTela = MediaQuery.of(context).size.width;
@@ -154,15 +254,22 @@ class _EditarTarefaState extends State<EditarTarefa> {
                 children: [
                   //data
                   ListTile(
-                    trailing: Icon(Ionicons.create_outline),
+                    trailing: IconButton(
+                      constraints: BoxConstraints(),
+                      onPressed: _showDatePicker,
+                      icon: Icon(Ionicons.create_outline),
+                    ),
                     horizontalTitleGap: 15,
                     leading: CircleAvatar(
                       backgroundColor: AppColors.border,
                       radius: 25,
-                      child: Icon(
-                        Ionicons.calendar_outline,
-                        color: AppColors.overlay,
-                        size: 24,
+                      child: IconButton(
+                        icon: Icon(
+                          Ionicons.calendar_outline,
+                          color: AppColors.overlay,
+                          size: 24,
+                        ),
+                        onPressed: _showDatePicker,
                       ),
                     ),
                     contentPadding: EdgeInsets.zero,
@@ -173,14 +280,17 @@ class _EditarTarefaState extends State<EditarTarefa> {
                       ),
                     ),
                     subtitle: Text(
-                      DateHelpers.formatDataPT(widget.tarefa.data),
+                      DateHelpers.formatDataPT(_dataSelecionada),
                       style: AppTextStyles.title20Bold,
                     ),
                   ),
 
                   //hora
                   ListTile(
-                    trailing: Icon(Ionicons.create_outline),
+                    trailing: IconButton(
+                      onPressed: _showTimePicker,
+                      icon: Icon(Ionicons.create_outline),
+                    ),
                     horizontalTitleGap: 15,
                     leading: CircleAvatar(
                       backgroundColor: AppColors.border,
@@ -199,7 +309,7 @@ class _EditarTarefaState extends State<EditarTarefa> {
                       ),
                     ),
                     subtitle: Text(
-                      DateHelpers.formatHora(widget.tarefa.hora),
+                      DateHelpers.formatHora(_horaSelecionada),
                       style: AppTextStyles.title20Bold,
                     ),
                   ),
@@ -220,7 +330,11 @@ class _EditarTarefaState extends State<EditarTarefa> {
                           color: AppColors.textMuted,
                         ),
                       ),
-                      Icon(Ionicons.create_outline),
+                      IconButton(
+                        onPressed: () =>
+                            _showEditNote(context, widget.tarefa.notas ?? ''),
+                        icon: Icon(Ionicons.create_outline),
+                      ),
                     ],
                   ),
                   SizedBox(height: 10),
