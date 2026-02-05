@@ -1,46 +1,29 @@
 import 'package:dayflow/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class MainForm extends StatelessWidget {
-  final TextEditingController? controller;
+class MainSelect<T> extends StatelessWidget {
   final String? label;
   final String? hint;
-  final TextInputType? keyboardType;
-  final ValueChanged<String>? onChanged;
-  final String? Function(String?)? validator;
-  final bool obscureText;
+  final T? value;
+  final List<DropdownMenuItem<T>> items;
+  final ValueChanged<T?>? onChanged;
+  final String? Function(T?)? validator;
   final bool enabled;
-  final int maxLines;
-  final int? maxLength;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
-  final List<TextInputFormatter>? inputFormatters;
-  final TextInputAction? textInputAction;
-  final VoidCallback? onTap;
-  final bool readOnly;
-  final FocusNode? focusNode;
   final EdgeInsetsGeometry? contentPadding;
 
-  const MainForm({
+  const MainSelect({
     super.key,
-    this.controller,
     this.label,
     this.hint,
-    this.keyboardType,
+    this.value,
+    required this.items,
     this.onChanged,
     this.validator,
-    this.obscureText = false,
     this.enabled = true,
-    this.maxLines = 1,
-    this.maxLength,
     this.prefixIcon,
     this.suffixIcon,
-    this.inputFormatters,
-    this.textInputAction,
-    this.onTap,
-    this.readOnly = false,
-    this.focusNode,
     this.contentPadding,
   });
 
@@ -59,23 +42,17 @@ class MainForm extends StatelessWidget {
           ),
           const SizedBox(height: 6),
         ],
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          onChanged: onChanged,
+        DropdownButtonFormField<T>(
+          initialValue: value,
+          items: items,
+          onChanged: enabled ? onChanged : null,
           validator: validator,
-          obscureText: obscureText,
-          enabled: enabled,
-          maxLines: maxLines,
-          maxLength: maxLength,
-          inputFormatters: inputFormatters,
-          textInputAction: textInputAction,
-          onTap: onTap,
-          readOnly: readOnly,
-          focusNode: focusNode,
-          style: AppTextStyles.text16.copyWith(
-            color: AppColors.textPrimary,
-          ),
+          icon:
+              suffixIcon ??
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.textMuted,
+              ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTextStyles.text14.copyWith(
@@ -84,10 +61,10 @@ class MainForm extends StatelessWidget {
             filled: true,
             fillColor: AppColors.card,
             isDense: true,
-            contentPadding: contentPadding ??
+            contentPadding:
+                contentPadding ??
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
 
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -99,25 +76,26 @@ class MainForm extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide:
-                  const BorderSide(color: AppColors.primary, width: 2),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide:
-                  const BorderSide(color: AppColors.error, width: 2),
+              borderSide: const BorderSide(color: AppColors.error, width: 2),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide:
-                  const BorderSide(color: AppColors.error, width: 2),
+              borderSide: const BorderSide(color: AppColors.error, width: 2),
             ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide:
-                  BorderSide(color: AppColors.border.withValues(alpha: .5)),
+              borderSide: BorderSide(
+                color: AppColors.border.withValues(alpha: .5),
+              ),
             ),
           ),
+          dropdownColor: AppColors.card,
+          style: AppTextStyles.text16.copyWith(color: AppColors.textPrimary),
+          borderRadius: BorderRadius.circular(10),
         ),
       ],
     );
