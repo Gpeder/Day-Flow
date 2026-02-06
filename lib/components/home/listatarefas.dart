@@ -1,5 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dayflow/components/home/details_card.dart';
+import 'package:dayflow/model/categorias_model.dart';
+import 'package:dayflow/model/lista_tarefas_model.dart';
 import 'package:dayflow/theme/theme.dart';
 import 'package:dayflow/widgets/main_checkbox.dart';
 import 'package:dayflow/widgets/main_chip.dart';
@@ -9,77 +11,20 @@ import 'package:ionicons/ionicons.dart';
 class ListaTarefas extends StatefulWidget {
   const ListaTarefas({super.key});
 
-  static const categorias = [
-    'Todas',
-    'Trabalho',
-    'Saúde',
-    'Pessoal',
-    'Estudos',
-    'Outros',
-  ];
-
   @override
   State<ListaTarefas> createState() => _ListaTarefasState();
 }
 
 class _ListaTarefasState extends State<ListaTarefas> {
-  late List<Map<String, dynamic>> tarefas = [
-    {
-      'title': 'Reunião com equipe',
-      'categoria': 'Trabalho',
-      'prioridade': 'Alta',
-      'data': '2024-06-10',
-      'notas': 'Discutir o progresso do projeto e próximos passos.',
-      'hora': '10:00',
-      'selected': false,
-    },
-    {
-      'title': 'Consulta médica',
-      'prioridade': 'Média',
-      'categoria': 'Saúde',
-      'data': '2024-06-10',
-      'notas': 'Consulta de rotina com o médico. Levar exames recentes.',
-      'selected': false,
-    },
-    {
-      'title': 'Comprar mantimentos',
-      'prioridade': 'Baixa',
-      'categoria': 'Pessoal',
-      'data': '2024-06-10',
-      'hora': '5:00',
-      'notas': 'Comprar frutas, vegetais e produtos de limpeza.',
-      'selected': false,
-    },
-    {
-      'title': 'Estudar Flutter',
-      'prioridade': 'Alta',
-      'categoria': 'Estudos',
-      'data': '2024-06-10',
-      'hora': '7:00',
-      'notas': 'Praticar exercícios e revisar conceitos importantes.',
-      'selected': false,
-    },
-    {
-      'title': 'Reunião com equipe',
-      'categoria': 'Trabalho',
-      'prioridade': 'Alta',
-      'data': '2024-06-10',
-      'hora': '10:00',
-      'notas': 'Discutir o progresso do projeto e próximos passos.',
-      'selected': false,
-    },
-    {
-      'title': 'Consulta médica',
-      'prioridade': 'Média',
-      'categoria': 'Saúde',
-      'data': '2024-06-10',
-      'hora': '2:00',
-      'notas': 'Consulta de rotina com o médico. Levar exames recentes.',
-      'selected': false,
-    },
-  ];
+  List<ListaTarefasModel> _todasTarefas = [];
+  List<ListaTarefasModel> _tarefasExibidas = [];
 
-  late final List<Map<String, dynamic>> _tarefasOriginais = List.from(tarefas);
+  @override
+  void initState() {
+    super.initState();
+    _todasTarefas = List.from(tarefas);
+    _tarefasExibidas = List.from(_todasTarefas);
+  }
 
   int _categoriaSelecionadaIndex = 0;
 
@@ -113,10 +58,10 @@ class _ListaTarefasState extends State<ListaTarefas> {
       _categoriaSelecionadaIndex = index;
 
       if (categoria == 'Todas') {
-        tarefas = List.from(_tarefasOriginais);
+        _tarefasExibidas = List.from(_todasTarefas);
       } else {
-        tarefas = _tarefasOriginais
-            .where((tarefa) => tarefa['categoria'] == categoria)
+        _tarefasExibidas = _todasTarefas
+            .where((tarefa) => tarefa.categoria == categoria)
             .toList();
       }
     });
@@ -132,9 +77,9 @@ class _ListaTarefasState extends State<ListaTarefas> {
         Text(dataFormatada, style: AppTextStyles.title24Bold),
         SizedBox(height: 4),
         Text(
-          tarefas.isEmpty
+          _tarefasExibidas.isEmpty
               ? 'Nenhuma tarefa encontrada'
-              : '${tarefas.length} tarefa${tarefas.length > 1 ? 's' : ''} hoje',
+              : '${_tarefasExibidas.length} tarefa${_tarefasExibidas.length > 1 ? 's' : ''} hoje',
           style: AppTextStyles.text16.copyWith(color: AppColors.disabled),
         ),
         SizedBox(height: 20),
@@ -143,14 +88,14 @@ class _ListaTarefasState extends State<ListaTarefas> {
           height: 40,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: ListaTarefas.categorias.length,
+            itemCount: categorias.length,
             separatorBuilder: (context, index) => SizedBox(width: 8),
             itemBuilder: (context, index) {
               return MainChip(
-                label: ListaTarefas.categorias[index],
+                label: categorias[index].nome,
                 selected: _categoriaSelecionadaIndex == index,
                 onTap: () {
-                  _onCategoriaSelected(ListaTarefas.categorias[index], index);
+                  _onCategoriaSelected(categorias[index].nome, index);
                 },
               );
             },
@@ -159,28 +104,28 @@ class _ListaTarefasState extends State<ListaTarefas> {
         SizedBox(height: 20),
 
         Expanded(
-          child: tarefas.isEmpty
+          child: _tarefasExibidas.isEmpty
               ? _resultado()
               : ListView.separated(
                   physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.zero,
                   separatorBuilder: (context, index) => SizedBox(height: 10),
                   itemBuilder: (context, index) {
-                    final tarefa = tarefas[index];
+                    final tarefa = _tarefasExibidas[index];
                     return ItemListaTarefas(
-                      prioridade: tarefa['prioridade'],
-                      title: tarefa['title'],
-                      categoria: tarefa['categoria'],
-                      hora: tarefa['hora'] ?? '',
-                      selected: tarefa['selected'] as bool,
+                      prioridade: tarefa.prioridade,
+                      title: tarefa.title,
+                      categoria: tarefa.categoria,
+                      hora: tarefa.hora,
+                      selected: tarefa.selected,
                       onChanged: (value) {
                         setState(() {
-                          tarefa['selected'] = value ?? false;
+                          tarefa.selected = value ?? false;
                         });
                       },
                       onTap: () {
                         setState(() {
-                          tarefa['selected'] = !tarefa['selected'];
+                          tarefa.selected = !tarefa.selected;
                         });
                       },
                       onLongPress: () {
@@ -193,7 +138,7 @@ class _ListaTarefasState extends State<ListaTarefas> {
                       },
                     );
                   },
-                  itemCount: tarefas.length,
+                  itemCount: _tarefasExibidas.length,
                 ),
         ),
       ],

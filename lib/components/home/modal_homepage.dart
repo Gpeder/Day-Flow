@@ -1,5 +1,5 @@
-import 'package:dayflow/components/home/listatarefas.dart';
 import 'package:dayflow/helpers/date_helpers.dart';
+import 'package:dayflow/model/categorias_model.dart';
 import 'package:dayflow/theme/theme.dart';
 import 'package:dayflow/widgets/main_datapicker.dart';
 import 'package:dayflow/widgets/main_form.dart';
@@ -134,12 +134,10 @@ class _MainModalState extends State<MainModal> {
                                   });
                                 },
                                 items:
-                                    ListaTarefas.categorias
-                                        .where((element) => element != 'Todas')
-                                        .map((e) {
+                                    categorias.map((e) {
                                           return DropdownMenuItem(
-                                            value: e,
-                                            child: Text(e),
+                                            value: e.nome,
+                                            child: Text(e.nome),
                                           );
                                         })
                                         .toList(),

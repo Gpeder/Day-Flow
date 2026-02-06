@@ -1,34 +1,20 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:dayflow/helpers/date_helpers.dart';
+import 'package:dayflow/controller/home_controler.dart';
 import 'package:dayflow/theme/theme.dart';
+import 'package:dayflow/model/lista_tarefas_model.dart';
 import 'package:dayflow/widgets/main_card.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
 class DetailsCard extends StatelessWidget {
-  final Map<String, dynamic> item;
+  final ListaTarefasModel item;
   const DetailsCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    Color getPrioridadeCor(String prioridade) {
-      switch (prioridade) {
-        case 'Alta':
-          return AppColors.error;
-        case 'Média':
-          return AppColors.warning;
-        case 'Baixa':
-          return AppColors.success;
-        default:
-          return AppColors.textSecondary;
-      }
-    }
-
-    final dataFormatada =
-        DateHelpers.formatDataPT(DateHelpers.parseData(item['data']));
-    double larguraDaTela = MediaQuery.of(context).size.width;
-    double larguraDoCard = (larguraDaTela / 2) - 24;
-
+    final controller = HomeController();
+    final dataFormatada = controller.formatarData(item.data);
+    final larguraDoCard = controller.getLarguraCard(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
@@ -40,7 +26,7 @@ class DetailsCard extends StatelessWidget {
         ),
         centerTitle: true,
         title: AutoSizeText(
-          item['title'],
+          item.title,
           style: AppTextStyles.title20Bold,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -101,7 +87,7 @@ class DetailsCard extends StatelessWidget {
                       ),
                     ),
                     subtitle: Text(
-                      item['hora'] ?? '',
+                      item.hora,
                       style: AppTextStyles.title20Bold,
                     ),
                   ),
@@ -123,7 +109,7 @@ class DetailsCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 5),
-                  Text(item['notas'], style: AppTextStyles.text18),
+                  Text(item.notas, style: AppTextStyles.text18),
                 ],
               ),
             ),
@@ -166,7 +152,7 @@ class DetailsCard extends StatelessWidget {
                             borderRadius: .circular(50),
                           ),
                           child: Text(
-                            item['categoria'],
+                            item.categoria,
                             style: AppTextStyles.text16Bold,
                           ),
                         ),
@@ -202,13 +188,13 @@ class DetailsCard extends StatelessWidget {
                           alignment: .center,
                           padding: .symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: getPrioridadeCor(
-                              item['prioridade'],
+                            color: controller.getPrioridadeCor(
+                              item.prioridade,
                             ).withValues(alpha: 0.3),
                             borderRadius: .circular(50),
                           ),
                           child: Text(
-                            item['prioridade'],
+                            item.prioridade,
                             style: AppTextStyles.text16Bold,
                           ),
                         ),
